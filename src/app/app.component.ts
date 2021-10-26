@@ -1,61 +1,76 @@
 import {Component, OnInit} from '@angular/core';
-import {todo} from "../models/todo";
-import {FormBuilder} from "@angular/forms";
+import {Todo} from '../models/todo';
+import {AbstractControl, FormBuilder, FormControl, FormGroup} from '@angular/forms';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent  implements OnInit{
-  //ça c'est une méthode
+export class AppComponent implements OnInit {
   title = 'todolist-angular';
-  public todoList: Array<todo> = [
+  public todoList: Array<Todo> = [
     {
-      label:'food',
+      label: 'foo',
       at: new Date(),
       finished: true,
-    },
-    {
-      label:'bar',
+    }, {
+      label: 'bar',
       at: new Date(),
       finished: false,
-    },
-    {
-      label:'foodbar',
+    }, {
+      label: 'foobar',
       at: new Date(),
       finished: true,
     }
-
-
   ];
 
-  public  form = this.fb.array([  // mon formulaire est composée de toute la suite
-    this.fb.group({
-      label: [''],
-      at: [new Date()],
-      finished:[false],
-    }),
-  ]);
+  // new FormArray();
+  public form = this.fb.array([]);
 
   public constructor(
-    private  fb: FormBuilder,
+    private fb: FormBuilder,
   ) {
   }
+
   public ngOnInit(): void {
+    for (let i = 0; i < this.todoList.length; i++) {
+      this.addTodo();
+    }
+
     this.form.setValue(this.todoList);
   }
 
+  public addTodo(): void {
+    this.form.push(
+      // new FormGroup();
+      this.fb.group({
+        // new FormControl();
+        label: [''],
+        // new FormControl();
+        at: [new Date()],
+        // new FormControl();
+        finished: [false],
+      })
+    );
+  }
 
-  // public  get todoList(): Array<string>{
-  //   const  arr: Array<string> = [];
-  //
-  //   for (let i = 0; i < 10; i++){
-  //     arr.push('item' + i);
-  //   }
-  //   return arr;
+  public getControl(formGroup: AbstractControl, key: string): FormControl
+  {
+    if (!(formGroup instanceof FormGroup)) {
+      throw new Error('Form given as first argument is not an instance of FormGroup');
+    }
+
+    const fc = formGroup.get(key);
+    if (!(fc instanceof FormControl)) {
+      throw new Error('Form retrieve is not an instance of FormControl');
+    }
+
+    return fc;
+  }
+
+  // public getControl(formGroup: AbstractControl, key: string): FormControl
+  // {
+  //   return (formGroup as FormGroup).get(key) as FormControl;
   // }
-
-
 }
-
